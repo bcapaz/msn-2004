@@ -48,7 +48,7 @@ export default function Login() {
                   value={delegacao}
                   onChange={(e) => setDelegacao(e.target.value)}
                   className="msn-input w-full text-sm" 
-                  placeholder="Ex: Japão"
+                  placeholder="Nome da Delegação"
                   required
                 />
               </div>
@@ -59,7 +59,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="msn-input w-full text-sm" 
-                  placeholder="••••••••"
+                  placeholder="Senha"
                   required
                 />
               </div>
