@@ -5,7 +5,7 @@ import WindowFrame from '../components/ui/WindowFrame';
 const AVATARES = [
   '/images/avatar-blue.png',
   '/images/avatar-green.png',
-  '/images/avatar-pink.png',
+  '/images/avatar-purple.png',
   '/images/avatar-orange.png',
   '/images/avatar-red.png',
   '/images/avatar-yellow.png'
