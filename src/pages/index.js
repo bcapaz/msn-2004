@@ -42,7 +42,7 @@ export default function Login() {
             {/* Avatar Centralizado com Borda */}
             <div className="w-28 h-28 border-2 border-gray-300 p-1 bg-white shadow-inner mb-8">
               <img 
-                src="https://i.imgur.com/83pZp.png" 
+                src="/images/default-avatar.png" 
                 alt="Avatar" 
                 className="w-full h-full object-cover"
               />
@@ -57,7 +57,7 @@ export default function Login() {
                   value={delegacao}
                   onChange={(e) => setDelegacao(e.target.value)}
                   className="msn-input w-full text-sm" 
-                  placeholder="Ex: Japão"
+                  placeholder="Nome de Delegação"
                   required
                 />
               </div>
