@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("postgresql://neondb_owner:npg_nNXSOZkAqy49@ep-lucky-darkness-ac9zhifb-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  username      String   @unique
+  email         String   @unique
+  password      String   // Senha em texto puro para facilitar o modelo (ou use hash em produção)
+  
+  // Perfil Visual do MSN
+  display_name  String?  // O nome que aparece (Ex: "Delegado do Japão")
+  subnick       String?  // A frase de efeito
+  avatar_url    String?  @default("/images/default-avatar.png")
+  status        String   @default("online") // online, busy, away, offline
+  
+  // Permissões
+  isAdmin       Boolean  @default(false) // Define se é Diretor (tem acesso ao Spy Panel)
+  
+  // Relações de Mensagens
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  content     String   @db.Text
+  timestamp   DateTime @default(now())
+  
+  // Metadados da mensagem
+  isNudge     Boolean  @default(false) // Se true, faz a tela do destinatário tremer
+  
+  // Quem enviou
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId    Int
+  
+  // Quem recebeu
+  receiver    User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId  Int
+
+  // Índice para busca rápida (essencial para o Polling e Espionagem)
+  @@index([senderId, receiverId])
+}
