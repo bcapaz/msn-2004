@@ -47,7 +47,7 @@ export default function Login() {
     } finally {
       setLoading(false);
     }
-    };
+  };
   
       if (res.ok) {
         const user = await res.json();
