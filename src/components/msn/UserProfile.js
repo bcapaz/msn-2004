@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const AVATARES_DISPONIVEIS = [
   '/images/avatar-blue.png',
   '/images/avatar-green.png',
-  '/images/avatar-pink.png',
+  '/images/avatar-yellow.png',
   '/images/avatar-orange.png',
   '/images/avatar-red.png',
   '/images/avatar-purple.png'
