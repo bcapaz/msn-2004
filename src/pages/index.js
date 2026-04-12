@@ -1,78 +1,108 @@
 import { useState } from 'react';
-import { useRouter } from 'next/router';
 import WindowFrame from '../components/ui/WindowFrame';
 
 export default function Login() {
+  const [isRegistering, setIsRegistering] = useState(false);
   const [delegacao, setDelegacao] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    // ... (sua lógica de login permanece igual)
-    setTimeout(() => {
-        router.push('/messenger');
-        setLoading(false);
-    }, 1000); // Teste básico
-  };
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center bg-[#86b9e0]">
-      {/* Container com tamanho fixo para a janela de login */}
-      <div style={{ width: '350px', height: '520px' }}>
+    <div style={{
+      height: '100vh',
+      width: '100vw',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#86b9e0',
+      fontFamily: 'Segoe UI, Tahoma, sans-serif'
+    }}>
+      {/* Container da Janela Principal */}
+      <div style={{ width: '380px', height: '550px', position: 'relative' }}>
         <WindowFrame title="Windows Live Messenger">
-          <div className="flex flex-col items-center p-8 pt-12">
+          
+          <div style={{ padding: '40px 30px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             
-            {/* Avatar Centralizado com Borda - Tamanho forçado por estilo inline */}
-            <div 
-              className="border-2 border-gray-300 p-1 bg-white shadow-inner mb-8"
-              style={{ width: '112px', height: '112px' }} // w-28 em pixels
-            >
+            {/* Logo e Título de Boas-vindas */}
+            <div style={{ marginBottom: '30px', textAlign: 'center' }}>
               <img 
-                src="/images/default-avatar.png" 
-                alt="Avatar" 
-                className="object-cover"
-                style={{ width: '100%', height: '100%' }} // Preenche o container
+                src="/images/logo-msn.png" 
+                style={{ width: '60px', marginBottom: '10px' }} 
+              />
+              <h1 style={{ color: '#235d81', fontSize: '18px', fontWeight: 'bold' }}>
+                {isRegistering ? 'Criar nova conta' : 'Entrar'}
+              </h1>
+            </div>
+
+            {/* Avatar Central com moldura de 2004 */}
+            <div style={{
+              width: '100px',
+              height: '100px',
+              border: '1px solid #a5c3d9',
+              padding: '4px',
+              backgroundColor: 'white',
+              boxShadow: 'inset 0 0 10px rgba(0,0,0,0.1)',
+              marginBottom: '25px'
+            }}>
+              <img 
+                src="/images/avatar-blue.png" 
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }} 
               />
             </div>
 
-            {/* Formulário de Login */}
-            <form onSubmit={handleLogin} className="w-full space-y-3">
-              {/* ... (campos de input permanecem iguais) */}
-              <div className="flex flex-col">
-                <label className="text-xs text-[#235d81] font-bold mb-1">Nome da Delegação:</label>
+            {/* Inputs Estilizados */}
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '11px', color: '#235d81', fontWeight: 'bold', marginBottom: '4px' }}>
+                  Nome da Delegação:
+                </label>
                 <input 
-                  type="text"
+                  type="text" 
+                  className="msn-input"
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                  placeholder="Nome da Delegação"
                   value={delegacao}
                   onChange={(e) => setDelegacao(e.target.value)}
-                  className="msn-input w-full text-sm" 
-                  placeholder="Nome da Delegação"
-                  required
                 />
               </div>
-              <div className="flex flex-col">
-                <label className="text-xs text-[#235d81] font-bold mb-1">Senha:</label>
+
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{ fontSize: '11px', color: '#235d81', fontWeight: 'bold', marginBottom: '4px' }}>
+                  Senha:
+                </label>
                 <input 
-                  type="password"
+                  type="password" 
+                  className="msn-input"
+                  style={{ width: '100%', boxSizing: 'border-box' }}
+                  placeholder="Senha"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="msn-input w-full text-sm" 
-                  placeholder="Senha"
-                  required
                 />
               </div>
-              <div className="pt-6 flex justify-center">
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="msn-button w-32 font-bold py-1.5"
-                >
-                  {loading ? 'Entrando...' : 'Entrar'}
-                </button>
-              </div>
-            </form>
+            </div>
+
+            {/* Botão de Ação Principal */}
+            <button className="msn-button" style={{ 
+              marginTop: '30px', 
+              width: '120px', 
+              padding: '8px',
+              fontWeight: 'bold',
+              fontSize: '14px'
+            }}>
+              {isRegistering ? 'Cadastrar' : 'Entrar'}
+            </button>
+
+            {/* Alternar entre Login e Registro */}
+            <div style={{ marginTop: '25px', textAlign: 'center' }}>
+              <p 
+                onClick={() => setIsRegistering(!isRegistering)}
+                style={{ fontSize: '11px', color: '#004c99', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                {isRegistering 
+                  ? 'Já possui uma delegação? Entre aqui' 
+                  : 'Sua delegação ainda não tem conta? Clique aqui'}
+              </p>
+            </div>
+
           </div>
         </WindowFrame>
       </div>
