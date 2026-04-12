@@ -24,18 +24,31 @@ export default function Login() {
     setLoading(true);
 
     const endpoint = isRegistering ? '/api/auth/register' : '/api/auth/login';
-    
+  
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          delegacao, 
-          password, 
-          avatarUrl: selectedAvatar // Envia o avatar escolhido no registro
-        }),
+        body: JSON.stringify({ delegacao, password, avatarUrl: selectedAvatar }),
       });
 
+      const data = await res.json();
+
+      if (res.ok) {
+        // MUITO IMPORTANTE: Salva a sessão
+        localStorage.setItem('user', JSON.stringify(data));
+        // Redireciona
+        router.push('/messenger');
+      } else {
+        alert(data.message || 'Erro ao processar.');
+      }
+    } catch (err) {
+      alert('Erro de rede ou servidor fora do ar.');
+    } finally {
+      setLoading(false);
+    }
+    };
+  
       if (res.ok) {
         const user = await res.json();
         localStorage.setItem('user', JSON.stringify(user));
