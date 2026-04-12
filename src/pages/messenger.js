@@ -1,85 +1,88 @@
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+import WindowFrame from '../components/ui/WindowFrame';
 import UserProfile from '../components/msn/UserProfile';
 import ContactList from '../components/msn/ContactList';
 import ChatWindow from '../components/msn/ChatWindow';
-import WindowFrame from '../components/ui/WindowFrame';
 
-export default function Messenger() {
-  const [me, setMe] = useState(null);
+export default function MessengerPage() {
+  const [currentUser, setCurrentUser] = useState(null);
   const [contacts, setContacts] = useState([]);
   const [activeContact, setActiveContact] = useState(null);
-  const [messages, setMessages] = useState([]);
+  const router = useRouter();
 
-  // Carrega dados iniciais do usuário logado (simulado via localStorage do Login)
+  // 1. Verificação de Sessão (Só entra quem está logado)
   useEffect(() => {
-    const savedUser = JSON.parse(localStorage.getItem('user'));
-    setMe(savedUser);
-    fetchContacts();
-  }, []);
+    const loggedUser = localStorage.getItem('user');
+    if (!loggedUser) {
+      router.push('/');
+    } else {
+      setCurrentUser(JSON.parse(loggedUser));
+    }
+  }, [router]);
 
-  // Busca lista de contatos
-  const fetchContacts = async () => {
-    const res = await fetch('/api/users');
-    const data = await res.json();
-    setContacts(data.filter(c => c.id !== me?.id));
-  };
-
-  // Polling para mensagens novas a cada 3 segundos
+  // 2. Busca a lista de contatos (outras delegações)
   useEffect(() => {
-    if (!activeContact || !me) return;
+    if (currentUser) {
+      const fetchContacts = async () => {
+        try {
+          const res = await fetch('/api/users/list');
+          if (res.ok) {
+            const data = await res.json();
+            // Filtra para não mostrar o próprio usuário na lista
+            setContacts(data.filter(u => u.id !== currentUser.id));
+          }
+        } catch (error) {
+          console.error("Erro ao carregar contatos:", error);
+        }
+      };
+      fetchContacts();
+    }
+  }, [currentUser]);
 
-    const interval = setInterval(async () => {
-      const res = await fetch(`/api/messages?sId=${me.id}&rId=${activeContact.id}`);
-      const data = await res.json();
-      setMessages(data.map(m => ({
-        ...m,
-        isMe: m.senderId === me.id,
-        senderName: m.senderId === me.id ? me.display_name : activeContact.display_name
-      })));
-    }, 3000);
-
-    return () => clearInterval(interval);
-  }, [activeContact, me]);
-
-  const handleSendMessage = async (content) => {
-    await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ senderId: me.id, receiverId: activeContact.id, content })
-    });
-    // Atualiza localmente para ser instantâneo
-    setMessages([...messages, { content, isMe: true, senderName: me.display_name }]);
-  };
+  if (!currentUser) return null; // Aguarda o carregamento
 
   return (
-    <div className="h-screen w-screen flex items-center justify-center p-4 bg-[#86b9e0]">
-      <div className="w-[800px] h-[600px] flex gap-4">
-        {/* Janela da Lista de Contatos */}
-        <div className="w-1/3">
-          <WindowFrame title="Windows Live Messenger">
-            <UserProfile user={me} />
-            <ContactList contacts={contacts} onSelectContact={setActiveContact} />
+    <>
+      <Head>
+        <title>{currentUser.display_name || currentUser.username} - Windows Live Messenger</title>
+      </Head>
+
+      <div className="h-screen w-screen flex items-center justify-center bg-[#86b9e0] overflow-hidden">
+        {/* Janela Principal do MSN (Tamanho clássico) */}
+        <div className="w-[850px] h-[650px] shadow-2xl relative">
+          <WindowFrame title={`Windows Live Messenger - ${currentUser.display_name || currentUser.username}`}>
+            
+            <div className="flex h-full w-full bg-[#eef5fb]">
+              
+              {/* Lado Esquerdo: Perfil + Lista de Contatos */}
+              <div className="w-[280px] h-full flex flex-col border-r border-gray-300">
+                <UserProfile user={currentUser} />
+                <ContactList 
+                  contacts={contacts} 
+                  onSelectContact={setActiveContact} 
+                />
+              </div>
+
+              {/* Lado Direito: Área de Chat */}
+              <div className="flex-1 h-full bg-white relative">
+                {activeContact ? (
+                  <ChatWindow activeContact={activeContact} currentUser={currentUser} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full p-10 text-center gap-4 bg-[#f3f9ff]">
+                    <img src="/images/logo-msn.png" className="w-20 opacity-40" />
+                    <p className="text-gray-500 text-sm">
+                      Selecione um delegado na lista ao lado para iniciar a trama diplomática...
+                    </p>
+                  </div>
+                )}
+              </div>
+
+            </div>
           </WindowFrame>
         </div>
-
-        {/* Janela de Chat Ativo */}
-        <div className="w-2/3">
-          {activeContact ? (
-            <WindowFrame title={`${activeContact.display_name} - Conversa`}>
-              <ChatWindow 
-                activeContact={activeContact} 
-                messages={messages} 
-                onSendMessage={handleSendMessage}
-                onSendNudge={() => alert('TRUUUM! (Tela tremendo)')}
-              />
-            </WindowFrame>
-          ) : (
-            <div className="h-full flex items-center justify-center border-2 border-dashed border-white/50 rounded-lg text-white font-bold italic">
-              Selecione um delegado para iniciar a trama...
-            </div>
-          )}
-        </div>
       </div>
-    </div>
+    </>
   );
 }
