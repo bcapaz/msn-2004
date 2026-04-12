@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
 const AVATARES_DISPONIVEIS = [
-  '/images/avatars/avatar-blue.png',
-  '/images/avatars/avatar-green.png',
-  '/images/avatars/avatar-pink.png',
-  '/images/avatars/avatar-orange.png',
-  '/images/avatars/avatar-red.png',
-  '/images/avatars/avatar-purple.png'
+  '/images/avatar-blue.png',
+  '/images/avatar-green.png',
+  '/images/avatar-pink.png',
+  '/images/avatar-orange.png',
+  '/images/avatar-red.png',
+  '/images/avatar-purple.png'
 ];
 
 export default function UserProfile({ user, onUpdate }) {
