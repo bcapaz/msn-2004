@@ -7,28 +7,27 @@ export default function ChatWindow({ activeContact, currentUser }) {
 
   const fetchMessages = async () => {
     try {
-      // Passamos os IDs como query params
       const res = await fetch(`/api/messages/list?senderId=${currentUser.id}&receiverId=${activeContact.id}`);
-      const data = await res.json();
-      if (Array.isArray(data)) {
+      if (res.ok) {
+        const data = await res.json();
         setMessages(data);
       }
     } catch (error) {
-      console.error("Erro ao carregar chat");
+      console.error("Erro ao buscar mensagens");
     }
   };
 
   useEffect(() => {
     fetchMessages();
-    const timer = setInterval(fetchMessages, 3000);
-    return () => clearInterval(timer);
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
   }, [activeContact.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async () => {
+  const handleSend = async () => {
     if (!inputText.trim()) return;
     const content = inputText;
     setInputText('');
@@ -42,13 +41,16 @@ export default function ChatWindow({ activeContact, currentUser }) {
         content: content
       })
     });
-    fetchMessages(); // Atualiza logo após enviar
+    fetchMessages();
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
       {/* Topo do Chat */}
-      <div style={{ height: '70px', padding: '0 15px', display: 'flex', alignItems: 'center', gap: '12px', background: 'linear-gradient(to bottom, #fff, #d9e8f5)', borderBottom: '1px solid #a5c3d9' }}>
+      <div style={{ 
+        height: '70px', padding: '0 15px', display: 'flex', alignItems: 'center', gap: '15px',
+        background: 'linear-gradient(to bottom, #fff, #d9e8f5)', borderBottom: '1px solid #a5c3d9'
+      }}>
         <img src={activeContact.avatar_url} style={{ width: '45px', height: '45px', border: '1px solid #7192ad', padding: '2px', background: 'white' }} />
         <div>
           <div style={{ fontSize: '14px', fontWeight: 'bold', color: '#235d81' }}>{activeContact.display_name}</div>
@@ -56,12 +58,12 @@ export default function ChatWindow({ activeContact, currentUser }) {
         </div>
       </div>
 
-      {/* Histórico */}
+      {/* Histórico com Scroll */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '15px', backgroundColor: 'white' }}>
         {messages.map((msg, i) => (
           <div key={i} style={{ marginBottom: '6px', fontSize: '12px' }}>
             <span style={{ fontWeight: 'bold', color: msg.senderId === currentUser.id ? '#235d81' : '#d15b00' }}>
-              {msg.sender?.display_name || 'Delegado'}:
+              {msg.sender?.display_name || msg.sender?.username} diz:
             </span>
             <span style={{ marginLeft: '6px' }}>{msg.content}</span>
           </div>
@@ -69,16 +71,17 @@ export default function ChatWindow({ activeContact, currentUser }) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Área de Input */}
       <div style={{ height: '140px', padding: '15px', backgroundColor: '#eef5fb', borderTop: '1px solid #a5c3d9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <textarea 
           style={{ flex: 1, border: '1px solid #a5c3d9', padding: '8px', fontSize: '12px', resize: 'none' }}
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), sendMessage())}
+          onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+          placeholder="Digite sua mensagem..."
         />
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <button className="msn-button" onClick={sendMessage} style={{ padding: '4px 20px' }}>Enviar</button>
+          <button className="msn-button" onClick={handleSend} style={{ padding: '4px 20px' }}>Enviar</button>
         </div>
       </div>
     </div>
