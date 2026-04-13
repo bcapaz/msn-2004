@@ -2,26 +2,29 @@ import prisma from '../../../lib/prisma';
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') return res.status(405).end();
+  
+  const { senderId, receiverId } = req.query;
+
+  // Garantimos que os IDs são números inteiros
+  const sId = parseInt(senderId);
+  const rId = parseInt(receiverId);
 
   try {
-    // Busca usuários que NÃO são admins
-    const users = await prisma.user.findMany({
+    const messages = await prisma.message.findMany({
       where: {
-        isAdmin: false
+        OR: [
+          { senderId: sId, receiverId: rId },
+          { senderId: rId, receiverId: sId },
+        ],
       },
-      select: {
-        id: true,
-        username: true,
-        display_name: true,
-        avatar_url: true,
-        subnick: true,
-        status: true
+      orderBy: { timestamp: 'asc' },
+      include: {
+        sender: { select: { username: true, display_name: true } }
       }
     });
-
-    return res.status(200).json(users);
+    return res.status(200).json(messages);
   } catch (error) {
-    console.error("Erro ao listar usuários:", error);
-    return res.status(500).json({ message: 'Erro ao buscar delegados.' });
+    console.error("Erro na API de mensagens:", error);
+    return res.status(500).json({ error: 'Erro ao buscar mensagens' });
   }
 }
