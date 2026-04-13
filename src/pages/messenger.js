@@ -13,7 +13,6 @@ export default function MessengerPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Busca usuário logado
     const loggedUser = localStorage.getItem('user');
     if (!loggedUser) {
       router.push('/');
@@ -27,7 +26,6 @@ export default function MessengerPage() {
       fetch('/api/users/list')
         .then(res => res.json())
         .then(data => {
-          // Remove você da lista de contatos para você não falar sozinho
           const otherDelegates = data.filter(u => u.id !== currentUser.id);
           setContacts(otherDelegates);
         })
@@ -40,24 +38,21 @@ export default function MessengerPage() {
   return (
     <>
       <Head>
-        <title>{currentUser.display_name || currentUser.username} - Windows Live Messenger</title>
+        <title>{currentUser.display_name || currentUser.username} - MSN</title>
       </Head>
 
-      {/* Container Principal que centraliza a janela */}
       <div style={{
         height: '100vh', width: '100vw', display: 'flex',
-        alignItems: 'center', justifyContent: 'center', backgroundColor: '#86b9e0',
-        overflow: 'hidden'
+        alignItems: 'center', justifyContent: 'center', backgroundColor: '#86b9e0'
       }}>
         
-        {/* Janela do MSN com tamanho fixo clássico */}
-        <div style={{ width: '900px', height: '650px', display: 'flex' }}>
+        {/* Janela com tamanho ABSOLUTAMENTE FIXO */}
+        <div style={{ width: '950px', height: '650px' }}>
           <WindowFrame title={`Windows Live Messenger - ${currentUser.display_name || currentUser.username}`}>
             
-            {/* ESTA É A CORREÇÃO PRINCIPAL: Um Flexbox horizontal */}
             <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#eef5fb' }}>
               
-              {/* COLUNA ESQUERDA (Tamanho fixo) */}
+              {/* COLUNA ESQUERDA: Fixa em 280px */}
               <div style={{ 
                 width: '280px', 
                 height: '100%', 
@@ -66,20 +61,20 @@ export default function MessengerPage() {
                 borderRight: '1px solid #a5c3d9' 
               }}>
                 <UserProfile user={currentUser} />
-                <ContactList contacts={contacts} onSelectContact={setActiveContact} />
+                <ContactList contacts={contacts} onSelectContact={setActiveContact} currentUser={currentUser} />
               </div>
 
-              {/* COLUNA DIREITA (Área de Chat - Ocupa o resto) */}
-              <div style={{ flex: 1, height: '100%', backgroundColor: 'white', position: 'relative' }}>
+              {/* COLUNA DIREITA: Área de Chat ocupando o resto */}
+              <div style={{ flex: 1, height: '100%', backgroundColor: 'white', overflow: 'hidden' }}>
                 {activeContact ? (
                   <ChatWindow activeContact={activeContact} currentUser={currentUser} />
                 ) : (
                   <div style={{ 
                     display: 'flex', flexDirection: 'column', alignItems: 'center', 
-                    justifyContent: 'center', h: '100%', padding: '40px', gap: '20px' 
+                    justifyContent: 'center', height: '100%', gap: '20px' 
                   }}>
-                    <img src="/images/logo-msn.png" style={{ width: '120px', opacity: '0.3' }} />
-                    <p style={{ color: '#235d81', fontSize: '13px', textAlign: 'center' }}>
+                    <img src="/images/logo-msn.png" style={{ width: '100px', opacity: '0.2' }} />
+                    <p style={{ color: '#235d81', fontSize: '13px' }}>
                       Selecione um delegado na lista ao lado para conversar
                     </p>
                   </div>
