@@ -23,11 +23,14 @@ export default function MessengerPage() {
   }, [router]);
 
   useEffect(() => {
-    // Busca lista de contatos (outras delegações)
     if (currentUser) {
       fetch('/api/users/list')
         .then(res => res.json())
-        .then(data => setContacts(data.filter(u => u.id !== currentUser.id)))
+        .then(data => {
+          // Remove você da lista de contatos para você não falar sozinho
+          const otherDelegates = data.filter(u => u.id !== currentUser.id);
+          setContacts(otherDelegates);
+        })
         .catch(err => console.error(err));
     }
   }, [currentUser]);
