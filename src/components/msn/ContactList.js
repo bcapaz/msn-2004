@@ -2,24 +2,59 @@ import React from 'react';
 
 export default function ContactList({ contacts, onSelectContact }) {
   return (
-    <div className="bg-white border-l border-r border-gray-300 h-full overflow-y-auto custom-scrollbar">
-      <div className="bg-[#eef5fb] px-2 py-1 text-xs font-bold text-gray-600 border-b border-gray-200">
+    <div style={{ flex: 1, backgroundColor: 'white', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+      
+      {/* Cabeçalho da Lista */}
+      <div style={{ 
+        backgroundColor: '#cfe4f3', 
+        padding: '4px 10px', 
+        fontSize: '11px', 
+        fontWeight: 'bold', 
+        color: '#235d81', 
+        borderBottom: '1px solid #a5c3d9' 
+      }}>
         Delegados ({contacts.length})
       </div>
-      {contacts.map(contact => (
-        <div 
-          key={contact.id}
-          onClick={() => onSelectContact(contact)}
-          className="flex items-center gap-2 px-3 py-2 hover:bg-[#cfe4f3] cursor-pointer border-b border-gray-100"
-        >
-          {/* Mostra o avatar minúsculo do contato na lista */}
-          <img src={contact.avatar_url || "/images/default-avatar.png"} className="w-5 h-5" />
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-medium text-[#235d81] truncate">{contact.display_name || contact.username}</span>
-            <span className="text-[10px] text-gray-500 italic truncate">{contact.subnick}</span>
-          </div>
-        </div>
-      ))}
+
+      {/* Lista de Usuários */}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {contacts.length === 0 ? (
+          <p style={{ padding: '20px', fontSize: '11px', color: '#999', textAlign: 'center', fontStyle: 'italic' }}>
+            Nenhum outro delegado encontrado...
+          </p>
+        ) : (
+          contacts.map((contact) => (
+            <div 
+              key={contact.id}
+              onClick={() => onSelectContact(contact)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                borderBottom: '1px solid #f0f0f0',
+                transition: 'background 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#eaf3f9'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+              <img 
+                src={contact.avatar_url || "/images/avatar-blue.png"} 
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} 
+              />
+              <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <span style={{ fontSize: '12px', fontWeight: '500', color: '#333' }}>
+                  {contact.display_name || contact.username}
+                </span>
+                <span style={{ fontSize: '10px', color: '#888', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {contact.subnick || ""}
+                </span>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 }
