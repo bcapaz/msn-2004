@@ -61,7 +61,10 @@ export default function MessengerPage() {
                 borderRight: '1px solid #a5c3d9' 
               }}>
                 <UserProfile user={currentUser} />
-                <ContactList contacts={contacts} onSelectContact={setActiveContact} currentUser={currentUser} />
+                <ContactList 
+                  contacts={contacts} 
+                  onSelectContact={setActiveContact} 
+                />
               </div>
 
               {/* COLUNA DIREITA: Área de Chat ocupando o resto */}
