@@ -9,80 +9,80 @@ export default function ChatWindow({ activeContact, currentUser }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    const fetchMessages = async () => {
-      try {
-        const res = await fetch(`/api/messages/list?senderId=${currentUser.id}&receiverId=${activeContact.id}`);
+  const fetchMessages = async () => {
+    try {
+      const res = await fetch(`/api/messages/list?senderId=${currentUser.id}&receiverId=${activeContact.id}`);
+      if (res.ok) {
         const data = await res.json();
-        if (JSON.stringify(data) !== JSON.stringify(messages)) {
+        // Só atualiza se o número de mensagens mudou (evita re-renders infinitos)
+        if (data.length !== messages.length) {
           setMessages(data);
         }
-      } catch (error) {
-        console.error("Erro ao buscar mensagens");
       }
-    };
+    } catch (error) {
+      console.error("Erro ao buscar mensagens do servidor");
+    }
+  };
 
+  useEffect(() => {
     fetchMessages();
-    const interval = setInterval(fetchMessages, 2000);
+    const interval = setInterval(fetchMessages, 3000); // Tenta buscar novas mensagens a cada 3s
     return () => clearInterval(interval);
-  }, [activeContact, currentUser, messages]);
+  }, [activeContact, currentUser, messages.length]); // Dependência no length ajuda a trigger o scroll
 
   useEffect(scrollToBottom, [messages]);
 
   const handleSend = async () => {
     if (!inputText.trim()) return;
-    const currentMsg = inputText;
-    setInputText('');
+    const msgParaEnviar = inputText;
+    setInputText(''); // Limpa o campo na hora para parecer rápido
 
     try {
-      await fetch('/api/messages/send', {
+      const res = await fetch('/api/messages/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           senderId: currentUser.id,
           receiverId: activeContact.id,
-          content: currentMsg
+          content: msgParaEnviar
         })
       });
-      const res = await fetch(`/api/messages/list?senderId=${currentUser.id}&receiverId=${activeContact.id}`);
-      const data = await res.json();
-      setMessages(data);
+
+      if (res.ok) {
+        await fetchMessages(); // Busca as mensagens de novo logo após enviar
+      }
     } catch (err) {
-      console.error("Erro ao enviar");
+      alert("Erro ao enviar mensagem!");
     }
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', backgroundColor: '#fff' }}>
       
-      {/* 1. CABEÇALHO: Altura fixa de 70px */}
+      {/* Cabeçalho Fixo */}
       <div style={{ 
         height: '70px', minHeight: '70px', display: 'flex', alignItems: 'center', gap: '12px', 
         padding: '0 15px', background: 'linear-gradient(to bottom, #ffffff 0%, #d9e8f5 100%)',
         borderBottom: '1px solid #a5c3d9'
       }}>
         <div style={{ width: '45px', height: '45px', border: '1px solid #7192ad', padding: '2px', backgroundColor: 'white' }}>
-          <img src={activeContact.avatar_url} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          <img src={activeContact.avatar_url || "/images/avatar-red.png"} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#235d81', whiteSpace: 'nowrap' }}>
-            {activeContact.display_name}
-          </span>
-          <span style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>
-            {activeContact.subnick || 'Disponível'}
-          </span>
+          <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#235d81' }}>{activeContact.display_name}</span>
+          <span style={{ fontSize: '11px', color: '#666', fontStyle: 'italic' }}>{activeContact.subnick || 'Disponível'}</span>
         </div>
       </div>
 
-      {/* 2. HISTÓRICO: flex: 1 faz ele ocupar o meio e ter SCROLL */}
+      {/* HISTÓRICO: Onde as mensagens APARECEM */}
       <div style={{ 
         flex: 1, overflowY: 'auto', padding: '15px', display: 'flex', flexDirection: 'column', gap: '8px',
         backgroundColor: '#fff'
       }}>
         {messages.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#ccc', fontSize: '11px', marginTop: '20px' }}>
+          <div style={{ textAlign: 'center', color: '#bbb', fontSize: '11px', marginTop: '30px' }}>
             Nenhuma mensagem trocada ainda.
-          </p>
+          </div>
         ) : (
           messages.map((msg, i) => (
             <div key={i} style={{ fontSize: '12px', lineHeight: '1.4' }}>
@@ -92,14 +92,16 @@ export default function ChatWindow({ activeContact, currentUser }) {
               }}>
                 {msg.sender?.display_name || msg.sender?.username} diz:
               </span>
-              <span style={{ marginLeft: '6px', color: '#333' }}>{msg.content}</span>
+              <span style={{ marginLeft: '6px', color: '#333', wordBreak: 'break-word' }}>
+                {msg.content}
+              </span>
             </div>
           ))
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* 3. INPUT: Fixo no rodapé com altura de 140px */}
+      {/* ÁREA DE INPUT */}
       <div style={{ 
         height: '140px', minHeight: '140px', padding: '15px', backgroundColor: '#eef5fb', 
         borderTop: '1px solid #a5c3d9', display: 'flex', flexDirection: 'column', gap: '8px' 
