@@ -88,9 +88,6 @@ export default function UserProfile({ user }) {
             fontSize: '15px',
             textShadow: '0.5px 0.5px 0px rgba(255,255,255,0.8)'
           }}>
-            {user?.display_name || user?.username}
-          </span>
-          <img src="/images/status-online.png" className="w-3.5 h-3.5" title="Disponível" />
         </div>
 
         {/* Subnick (Mensagem Pessoal) */}
