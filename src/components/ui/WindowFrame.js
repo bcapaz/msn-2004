@@ -2,37 +2,42 @@ import React from 'react';
 
 export default function WindowFrame({ children, title, onClose, onMinimize }) {
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden shadow-2xl" 
-         style={{ 
-           borderRadius: '8px 8px 4px 4px', 
-           border: '1px solid #235d81',
-           boxShadow: '0 10px 30px rgba(0,0,0,0.3)' 
-         }}>
+    <div 
+      className="flex flex-col w-full h-full overflow-hidden shadow-2xl" 
+      style={{ 
+        borderRadius: '10px 10px 5px 5px', // Mais arredondado como o MSN original
+        border: '1px solid #235d81',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.4)',
+        backgroundColor: '#eef5fb'
+      }}
+    >
       
-      {/* Barra de Título Premium */}
+      {/* Barra de Título Blindada */}
       <div 
-        className="flex items-center justify-between px-3 select-none w-full"
         style={{ 
           height: '34px', 
           background: 'linear-gradient(to bottom, #4a89b5 0%, #235d81 100%)',
           borderBottom: '1px solid #1a4561',
-          position: 'relative'
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 12px',
+          position: 'relative', // Essencial para o absolute dos botões funcionar
+          userSelect: 'none'
         }}
       >
-        
-        {/* Reflexo de brilho no topo da barra (Vibe Frutiger Aero) */}
+        {/* Reflexo Frutiger Aero */}
         <div style={{
           position: 'absolute',
           top: 0,
           left: 0,
           right: 0,
           height: '50%',
-          background: 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 100%)',
+          background: 'linear-gradient(to bottom, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%)',
           pointerEvents: 'none'
         }}></div>
         
         {/* Lado Esquerdo: Logo + Título */}
-        <div className="flex items-center gap-2 z-10">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', zIndex: 10 }}>
           <img 
             src="/images/logo-msn.png" 
             alt="MSN" 
@@ -41,53 +46,78 @@ export default function WindowFrame({ children, title, onClose, onMinimize }) {
           <span style={{ 
             color: 'white', 
             fontSize: '11px', 
-            fontWeight: '600', 
-            textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-            letterSpacing: '0.3px'
+            fontWeight: 'bold', 
+            textShadow: '1px 1px 2px rgba(0,0,0,0.6)',
+            letterSpacing: '0.2px',
+            whiteSpace: 'nowrap'
           }}>
             {title || "Windows Live Messenger"}
           </span>
         </div>
 
-        {/* Lado Direito: Botões (Estilo Windows 7/XP moderno) */}
-        <div className="flex items-center gap-1.5 z-10">
+        {/* Lado Direito: Botões Forçados no Canto */}
+        <div style={{ 
+          position: 'absolute', 
+          right: '8px', 
+          top: '50%', 
+          transform: 'translateY(-50%)', 
+          display: 'flex', 
+          gap: '4px', 
+          zIndex: 20 
+        }}>
+          {/* Minimizar */}
           <button 
             onClick={onMinimize}
-            className="flex items-center justify-center transition-all"
             style={{ 
               width: '26px', 
               height: '18px', 
-              backgroundColor: 'rgba(255,255,255,0.1)',
-              border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '2px'
+              backgroundColor: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              borderRadius: '2px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
             <div style={{ width: '8px', height: '2px', backgroundColor: 'white', marginTop: '6px' }}></div>
           </button>
           
+          {/* Fechar (X) */}
           <button 
             onClick={onClose}
-            className="flex items-center justify-center transition-all hover:bg-[#ff5c5c] active:bg-[#c42b1c]"
             style={{ 
-              width: '40px', 
+              width: '36px', 
               height: '18px', 
               backgroundColor: '#e81123',
               border: '1px solid #b20000',
               borderRadius: '2px',
-              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)'
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.3)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontSize: '11px',
+              fontWeight: 'bold'
             }}
           >
-            <span style={{ color: 'white', fontSize: '12px', fontWeight: 'bold', marginTop: '-1px' }}>✕</span>
+            ✕
           </button>
         </div>
       </div>
 
-      {/* Conteúdo da Janela com degradê suave de fundo */}
-      <div className="flex-1 overflow-hidden flex flex-col relative" 
-           style={{ 
-             background: 'linear-gradient(to bottom, #eef5fb 0%, #d9e8f5 100%)',
-             boxShadow: 'inset 0 0 15px rgba(35, 93, 129, 0.05)'
-           }}>
+      {/* Conteúdo com degradê suave */}
+      <div 
+        style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflow: 'hidden',
+          background: 'linear-gradient(to bottom, #eef5fb 0%, #d9e8f5 100%)',
+          position: 'relative'
+        }}
+      >
         {children}
       </div>
 
