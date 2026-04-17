@@ -39,7 +39,7 @@ export default function SpyPanel({ currentUser }) {
       <div style={{ height: '50px', backgroundColor: '#000', borderBottom: '2px solid #333', display: 'flex', alignItems: 'center', padding: '0 20px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff0000', boxShadow: '0 0 5px #ff0000' }}></div>
-          <span style={{ fontWeight: 'bold', letterSpacing: '1px' }}>ADMIN CONSOLE: MODO ESPREITA</span>
+          <span style={{ fontWeight: 'bold', letterSpacing: '1px' }}>ADMIN CONSOLE: ABIN BIG BROTHER</span>
         </div>
         <span style={{ fontSize: '12px', color: '#666' }}>DIRETOR: {currentUser.username}</span>
       </div>
@@ -47,7 +47,7 @@ export default function SpyPanel({ currentUser }) {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Seletor Lateral */}
         <div style={{ width: '300px', backgroundColor: '#151515', padding: '20px', borderRight: '1px solid #333' }}>
-          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 1 (DELEGADO A):</label>
+          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 1:</label>
           <select 
             style={{ width: '100%', padding: '8px', backgroundColor: '#222', color: '#0f0', border: '1px solid #444', marginBottom: '20px' }}
             onChange={(e) => setUserA(delegates.find(d => d.id === parseInt(e.target.value)))}
@@ -56,7 +56,7 @@ export default function SpyPanel({ currentUser }) {
             {delegates.map(d => <option key={d.id} value={d.id}>{d.display_name || d.username}</option>)}
           </select>
 
-          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 2 (DELEGADO B):</label>
+          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 2:</label>
           <select 
             style={{ width: '100%', padding: '8px', backgroundColor: '#222', color: '#0f0', border: '1px solid #444' }}
             onChange={(e) => setUserB(delegates.find(d => d.id === parseInt(e.target.value)))}
