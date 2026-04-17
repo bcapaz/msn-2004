@@ -26,10 +26,13 @@ export default function MessengerPage() {
       fetch('/api/users/list')
         .then(res => res.json())
         .then(data => {
-          const otherDelegates = data.filter(u => u.id !== currentUser.id);
-          setContacts(otherDelegates);
+          if (Array.isArray(data)) {
+            // Filtra para não mostrar você mesmo e não mostrar Admins
+            const otherDelegates = data.filter(u => u.id !== currentUser.id && !u.isAdmin);
+            setContacts(otherDelegates);
+          }
         })
-        .catch(err => console.error(err));
+        .catch(err => console.error("Erro ao buscar delegados:", err));
     }
   }, [currentUser]);
 
