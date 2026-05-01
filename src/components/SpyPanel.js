@@ -32,22 +32,26 @@ export default function SpyPanel({ currentUser }) {
     return () => clearInterval(interval);
   }, [userA, userB]);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div style={{ height: '100vh', width: '100vw', backgroundColor: '#0f0f0f', display: 'flex', flexDirection: 'column', color: '#00ff00', fontFamily: 'monospace' }}>
+    <div style={{ height: '100vh', width: '100vw', backgroundColor: '#0f0f0f', display: 'flex', flexDirection: 'column', color: '#0f0', fontFamily: 'monospace', minHeight: 0 }}>
       
       {/* Header Direção */}
-      <div style={{ height: '50px', backgroundColor: '#000', borderBottom: '2px solid #333', display: 'flex', alignItems: 'center', padding: '0 20px', justifyContent: 'space-between' }}>
+      <div style={{ height: '50px', minHeight: '50px', flexShrink: 0, backgroundColor: '#000', borderBottom: '2px solid #333', display: 'flex', alignItems: 'center', padding: '0 20px', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff0000', boxShadow: '0 0 5px #ff0000' }}></div>
-          <span style={{ fontWeight: 'bold', letterSpacing: '1px' }}>ADMIN CONSOLE: ABIN BIG BROTHER</span>
+          <span style={{ fontWeight: 'bold', letterSpacing: '1px', color: '#0f0' }}>ADMIN CONSOLE: MODO ESPREITA</span>
         </div>
         <span style={{ fontSize: '12px', color: '#666' }}>DIRETOR: {currentUser.username}</span>
       </div>
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', minHeight: 0 }}>
         {/* Seletor Lateral */}
-        <div style={{ width: '300px', backgroundColor: '#151515', padding: '20px', borderRight: '1px solid #333' }}>
-          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 1:</label>
+        <div style={{ width: '300px', flexShrink: 0, backgroundColor: '#151515', padding: '20px', borderRight: '1px solid #333', overflowY: 'auto' }}>
+          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 1 (DELEGADO A):</label>
           <select 
             style={{ width: '100%', padding: '8px', backgroundColor: '#222', color: '#0f0', border: '1px solid #444', marginBottom: '20px' }}
             onChange={(e) => setUserA(delegates.find(d => d.id === parseInt(e.target.value)))}
@@ -56,7 +60,7 @@ export default function SpyPanel({ currentUser }) {
             {delegates.map(d => <option key={d.id} value={d.id}>{d.display_name || d.username}</option>)}
           </select>
 
-          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 2:</label>
+          <label style={{ fontSize: '11px', color: '#888', display: 'block', marginBottom: '10px' }}>ALVO 2 (DELEGADO B):</label>
           <select 
             style={{ width: '100%', padding: '8px', backgroundColor: '#222', color: '#0f0', border: '1px solid #444' }}
             onChange={(e) => setUserB(delegates.find(d => d.id === parseInt(e.target.value)))}
@@ -67,27 +71,29 @@ export default function SpyPanel({ currentUser }) {
           </select>
         </div>
 
-        {/* Área de Log das Mensagens */}
-        <div style={{ flex: 1, padding: '20px', overflowY: 'auto', backgroundColor: '#050505' }}>
-          {userA && userB ? (
-            <div>
-              <p style={{ color: '#444', borderBottom: '1px solid #222', paddingBottom: '10px' }}>
-                &gt; INTERCEPTANDO CANAL: {userA.display_name} vs {userB.display_name}
-              </p>
-              {messages.map((msg, i) => (
-                <div key={i} style={{ marginBottom: '8px' }}>
-                  <span style={{ color: '#666' }}>[{new Date(msg.timestamp).toLocaleTimeString()}]</span>{' '}
-                  <strong style={{ color: msg.senderId === userA.id ? '#5dade2' : '#e67e22' }}>
-                    {msg.senderId === userA.id ? userA.display_name : userB.display_name}:
-                  </strong>{' '}
-                  <span style={{ color: '#ccc' }}>{msg.content}</span>
-                </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-          ) : (
-            <p style={{ color: '#333', textAlign: 'center', marginTop: '100px' }}>AGUARDANDO DEFINIÇÃO DE ALVOS...</p>
-          )}
+        {/* Área de Log das Mensagens - CORRIGIDA */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: '#050505', minHeight: 0 }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+            {userA && userB ? (
+              <>
+                <p style={{ color: '#444', borderBottom: '1px solid #222', paddingBottom: '10px', flexShrink: 0 }}>
+                  &gt; INTERCEPTANDO CANAL: {userA.display_name} vs {userB.display_name}
+                </p>
+                {messages.map((msg, i) => (
+                  <div key={i} style={{ marginBottom: '8px', flexShrink: 0 }}>
+                    <span style={{ color: '#666' }}>[{new Date(msg.timestamp).toLocaleTimeString()}]</span>{' '}
+                    <strong style={{ color: msg.senderId === userA.id ? '#5dade2' : '#e67e22' }}>
+                      {msg.senderId === userA.id ? userA.display_name : userB.display_name}:
+                    </strong>{' '}
+                    <span style={{ color: '#ccc' }}>{msg.content}</span>
+                  </div>
+                ))}
+                <div ref={messagesEndRef} style={{ flexShrink: 0, height: '1px' }} />
+              </>
+            ) : (
+              <p style={{ color: '#333', textAlign: 'center', marginTop: '100px' }}>AGUARDANDO DEFINIÇÃO DE ALVOS...</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
