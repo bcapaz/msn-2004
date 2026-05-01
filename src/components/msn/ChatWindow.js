@@ -45,11 +45,11 @@ export default function ChatWindow({ activeContact, currentUser }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', backgroundColor: '#fff', minHeight: 0 }}>
       
-      {/* Topo do Chat */}
+      {/* Topo do Chat - TRAVADO */}
       <div style={{ 
-        height: '70px', padding: '0 15px', display: 'flex', alignItems: 'center', gap: '15px',
+        height: '70px', minHeight: '70px', flexShrink: 0, padding: '0 15px', display: 'flex', alignItems: 'center', gap: '15px',
         background: 'linear-gradient(to bottom, #fff, #d9e8f5)', borderBottom: '1px solid #a5c3d9'
       }}>
         <img src={activeContact.avatar_url || "/images/avatar-red.png"} style={{ width: '45px', height: '45px', border: '1px solid #7192ad', padding: '2px', background: 'white', objectFit: 'contain' }} />
@@ -59,22 +59,23 @@ export default function ChatWindow({ activeContact, currentUser }) {
         </div>
       </div>
 
-      {/* Histórico com Scroll */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '15px', backgroundColor: 'white' }}>
+      {/* Histórico com Scroll - CORRIGIDO */}
+      <div style={{ 
+        flex: 1, minHeight: 0, overflowY: 'auto', padding: '15px', backgroundColor: 'white', 
+        display: 'flex', flexDirection: 'column' 
+      }}>
         {messages.length === 0 ? (
           <div style={{ textAlign: 'center', color: '#bbb', fontSize: '11px', marginTop: '30px' }}>
             Nenhuma mensagem trocada ainda.
           </div>
         ) : (
           messages.map((msg, i) => {
-            // A MÁGICA ACONTECE AQUI:
-            // Verifica de quem é a mensagem cruzando o ID do banco com os usuários da tela
             const isMe = msg.senderId === currentUser.id;
             const senderName = isMe ? currentUser.display_name : activeContact.display_name;
-            const nameColor = isMe ? '#235d81' : '#d15b00'; // Azul para você, Laranja para o outro
+            const nameColor = isMe ? '#235d81' : '#d15b00'; 
 
             return (
-              <div key={i} style={{ marginBottom: '6px', fontSize: '12px' }}>
+              <div key={i} style={{ marginBottom: '6px', fontSize: '12px', flexShrink: 0 }}>
                 <span style={{ fontWeight: 'bold', color: nameColor }}>
                   {senderName} diz:
                 </span>
@@ -83,11 +84,14 @@ export default function ChatWindow({ activeContact, currentUser }) {
             );
           })
         )}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} style={{ flexShrink: 0, height: '1px' }} />
       </div>
 
-      {/* Área de Input */}
-      <div style={{ height: '140px', padding: '15px', backgroundColor: '#eef5fb', borderTop: '1px solid #a5c3d9', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      {/* Área de Input - TRAVADA */}
+      <div style={{ 
+        height: '140px', minHeight: '140px', flexShrink: 0, padding: '15px', backgroundColor: '#eef5fb', 
+        borderTop: '1px solid #a5c3d9', display: 'flex', flexDirection: 'column', gap: '10px' 
+      }}>
         <textarea 
           style={{ flex: 1, border: '1px solid #a5c3d9', padding: '8px', fontSize: '12px', resize: 'none', outline: 'none' }}
           value={inputText}
