@@ -37,37 +37,50 @@ export default function MessengerPage() {
 
   if (!currentUser) return null;
 
-  // SE NÃO FOR ADMIN, ABRE O MSN NORMAL
   return (
     <>
       <Head>
         <title>{currentUser.display_name || currentUser.username} - MSN</title>
       </Head>
 
-      {/* AQUI ESTÁ A CORREÇÃO DA PÁGINA: 
-        1. minHeight: '100vh' (Garante que o fundo azul preencha a tela toda)
-        2. padding: '40px 20px' (Dá um respiro em cima e embaixo, liberando o scroll)
-        3. Removemos o overflow: 'hidden' que travava a rolagem 
-      */}
+      {/* 1. MÁGICA GLOBAL: Desbloqueia qualquer trava de rolagem que o Next.js tenha posto */}
+      <style jsx global>{`
+        html, body, #__next {
+          height: auto !important;
+          min-height: 100vh !important;
+          overflow-y: auto !important;
+        }
+      `}</style>
+
+      {/* 2. O FUNDO DA PÁGINA: Agora ele age como uma tela com scroll próprio */}
       <div style={{ 
-        minHeight: '100vh', 
-        width: '100%', 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'flex-start', /* Muda de center para flex-start para não cortar o topo */
+        position: 'absolute', 
+        top: 0, left: 0, right: 0, bottom: 0,
         backgroundColor: '#86b9e0',
-        padding: '40px 20px' 
+        overflowY: 'auto', /* HABILITA A BARRA DE ROLAGEM GERAL DA PÁGINA */
+        padding: '40px 0' /* Dá espaço em cima e embaixo para não colar nas bordas */
       }}>
         
-        <div style={{ width: '950px', height: '650px' }}>
+        {/* Usamos margin: '0 auto' no lugar de flexbox para garantir que a rolagem funcione */}
+        <div style={{ width: '950px', height: '650px', margin: '0 auto' }}>
           <WindowFrame title={`Windows Live Messenger - ${currentUser.display_name || currentUser.username}`}>
-            <div style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: '#eef5fb' }}>
+            
+            {/* 3. CONTEÚDO INTERNO: calc(100% - 32px) desconta a barra superior do WindowFrame! */}
+            <div style={{ 
+              display: 'flex', 
+              width: '100%', 
+              height: 'calc(100% - 32px)', 
+              backgroundColor: '#eef5fb',
+              overflow: 'hidden' /* Garante que nada vaze e quebre a interface */
+            }}>
               
+              {/* Coluna Esquerda */}
               <div style={{ width: '280px', height: '100%', display: 'flex', flexDirection: 'column', borderRight: '1px solid #a5c3d9' }}>
                 <UserProfile user={currentUser} />
                 <ContactList contacts={contacts} onSelectContact={setActiveContact} />
               </div>
 
+              {/* Coluna Direita (Chat) */}
               <div style={{ flex: 1, height: '100%', backgroundColor: 'white', overflow: 'hidden' }}>
                 {activeContact ? (
                   <ChatWindow activeContact={activeContact} currentUser={currentUser} />
